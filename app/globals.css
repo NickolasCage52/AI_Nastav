@@ -1,0 +1,423 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   DESIGN TOKENS
+   Философия: не true-black, а ink #07070A — 
+   даёт глубину без плоскости веб-чёрного.
+   ============================================ */
+:root {
+  /* Заголовки: выразительный serif без Google Fonts (доступен офлайн / при блокировке CDN) */
+  --font-display: ui-serif, Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia,
+    "Times New Roman", serif;
+
+  --bg-ink:       #07070A;
+  --bg-elev-1:    #0C0C12;
+  --bg-elev-2:    #131320;
+
+  --line:         rgba(255, 255, 255, 0.07);
+  --line-strong:  rgba(255, 255, 255, 0.14);
+
+  --text-pri:     #F5F5F7;
+  --text-sec:     rgba(245, 245, 247, 0.64);
+  --text-mut:     rgba(245, 245, 247, 0.40);
+
+  --accent:       #7B4BFF;
+  --accent-soft:  #A97BFF;
+  --accent-deep:  #5A2EE0;
+  --accent-glow:  rgba(123, 75, 255, 0.35);
+}
+
+* { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+html, body {
+  background: var(--bg-ink);
+  color: var(--text-pri);
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+/* глобальный grain — борется с banding в gradients */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.25 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+.h-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+}
+
+.h-mono {
+  font-family: var(--font-geist-mono), ui-monospace;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--text-mut);
+}
+
+/* ============================================
+   COMPONENTS
+   ============================================ */
+.glass {
+  background: rgba(12, 12, 18, 0.55);
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  transition: all 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  /* fake top-highlight — имитация top-edge свет */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.glass:hover {
+  border-color: rgba(123, 75, 255, 0.32);
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 80px -20px var(--accent-glow);
+}
+
+/* PRIMARY BUTTON — flag-ship CTA */
+.btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 28px;
+  border-radius: 14px;
+  font-weight: 500;
+  font-size: 16px;
+  background: linear-gradient(180deg, #8B5BFF 0%, var(--accent) 100%);
+  color: #fff;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 0 32px -8px var(--accent-glow),
+    0 6px 24px -8px rgba(90, 46, 224, 0.5);
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: shimmer 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+    0 0 56px -6px var(--accent-glow),
+    0 8px 32px -8px rgba(90, 46, 224, 0.6);
+}
+
+.btn-primary:active { transform: translateY(0) scale(0.98); }
+
+/* GHOST BUTTON */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 26px;
+  border-radius: 14px;
+  font-weight: 500;
+  font-size: 16px;
+  background: transparent;
+  color: var(--text-pri);
+  border: 1px solid var(--line-strong);
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.btn-ghost:hover {
+  border-color: var(--accent);
+  background: rgba(123, 75, 255, 0.06);
+  color: var(--accent-soft);
+}
+
+/* FOCUS STATES — accessibility */
+.btn-primary:focus-visible,
+.btn-ghost:focus-visible {
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 4px;
+}
+
+/* REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Problem cards — курсорный «прожектор» (GPU: opacity + gradient) */
+.glass-spotlight {
+  position: relative;
+  overflow: hidden;
+}
+.glass-spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    400px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgba(123, 75, 255, 0.14),
+    transparent 42%
+  );
+  opacity: 0;
+  transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+.glass-spotlight:hover::before {
+  opacity: 1;
+}
+.glass-spotlight > * {
+  position: relative;
+  z-index: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .glass-spotlight::before { transition: none; }
+}
+
+/* Hero magnetic CTA — внутреннее свечение под курсор */
+.hero-magnetic-cta {
+  --spot-x: 50%;
+  --spot-y: 50%;
+}
+.hero-magnetic-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    120px circle at var(--spot-x) var(--spot-y),
+    rgba(255, 255, 255, 0.22),
+    transparent 55%
+  );
+  pointer-events: none;
+  opacity: 0.85;
+  mix-blend-mode: soft-light;
+}
+
+/* WhyNow — вспышка за знаком > */
+.knockout-gt-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.knockout-gt-flash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 120%;
+  height: 120%;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(123, 75, 255, 0.45) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(12px);
+}
+.knockout-gt-flash.is-on {
+  animation: knockout-gt-pulse 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes knockout-gt-pulse {
+  0% { opacity: 0; transform: scale(0.4); }
+  35% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.2); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .knockout-gt-flash.is-on {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+
+/* FAQ — акцент слева у открытого пункта */
+.faq-row {
+  position: relative;
+}
+.faq-row[data-open='true']::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  translate: 0 -50%;
+  width: 2px;
+  height: 72%;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    opacity 350ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 350ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq-row[data-open='false']::before {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+/* Cases — краткое свечение суммы */
+.case-amount-glow {
+  animation: case-amount-glow-fade 800ms ease-out forwards;
+}
+@keyframes case-amount-glow-fade {
+  0% {
+    text-shadow:
+      0 0 24px rgba(123, 75, 255, 0.65),
+      0 0 48px rgba(123, 75, 255, 0.35);
+  }
+  100% {
+    text-shadow: 0 0 0 transparent;
+  }
+}
+
+.case-amount-glitch {
+  animation: case-amount-glitch 200ms ease-out;
+}
+@keyframes case-amount-glitch {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* Ticker — длительность через переменную (hover: почти пауза) */
+@keyframes marquee-x {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-track {
+  animation: marquee-x var(--marquee-duration, 40s) linear infinite;
+  transition: animation-duration 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* WhyNow — анимированное зачёркивание middle */
+.middle-strike {
+  position: relative;
+  display: inline-block;
+}
+.middle-strike::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.45);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.middle-strike.is-struck::after {
+  transform: scaleX(1);
+}
+
+/* Founder — пульс на линии прогресса */
+@keyframes founder-rail-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(123, 75, 255, 0); }
+  40% { box-shadow: 0 0 14px 1px rgba(123, 75, 255, 0.45); }
+  100% { box-shadow: 0 0 0 0 rgba(123, 75, 255, 0); }
+}
+.founder-rail-pulse {
+  animation: founder-rail-pulse 0.55s ease-out;
+}
+
+/* MASK REVEAL — для H1 */
+.mask-line {
+  display: block;
+  overflow: hidden;
+  line-height: 1.05;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.mask-line > span {
+  display: block;
+  transform: translateY(110%);
+  opacity: 0;
+  animation: reveal-up 900ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes reveal-up {
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* GRID BACKGROUND — для hero / final */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(123, 75, 255, 0.2);
+  border-radius: 10px;
+  border: 2px solid var(--bg-ink);
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(123, 75, 255, 0.4); }
+
+/* SELECTION */
+::selection { background: var(--accent); color: #fff; }
+
+/* CHIP */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border: 1px solid rgba(123, 75, 255, 0.4);
+  border-radius: 999px;
+  background: rgba(123, 75, 255, 0.08);
+  color: var(--accent-soft);
+  font-family: var(--font-geist-mono), ui-monospace;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 24px -8px var(--accent-glow);
+}
+
+/* BREATHING GLOW ORB — для hero и final CTA */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    rgba(123, 75, 255, 0.55) 0%,
+    rgba(123, 75, 255, 0.2) 35%,
+    transparent 70%
+  );
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
