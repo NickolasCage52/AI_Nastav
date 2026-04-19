@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 // Force dynamic — этот роут не должен кэшироваться
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+/** Vercel Hobby: до 10 с; Pro — можно поднять. Запрос к Telegram укладываем в этот предел. */
+export const maxDuration = 10;
 
 // Защита от совсем тупых бот-атак через honeypot
 // (поле website в форме должно быть скрытым и всегда пустым)
@@ -59,8 +61,55 @@ function escapeHtml(text: string): string {
     .replace(/>/g, '&gt;');
 }
 
-const TELEGRAM_FETCH_MS = 25_000;
-const UPSTREAM_PROXY_MS = 30_000;
+/** Чуть меньше maxDuration, чтобы успеть вернуть JSON до обрыва функции на Vercel */
+const TELEGRAM_FETCH_MS = 8_000;
+const UPSTREAM_PROXY_MS = 9_000;
+
+/** Убираем случайные кавычки из значений в Vercel UI */
+function normalizeEnvValue(s: string | undefined): string | undefined {
+  if (s == null) return undefined;
+  let t = s.trim();
+  if (
+    (t.startsWith('"') && t.endsWith('"')) ||
+    (t.startsWith("'") && t.endsWith("'"))
+  ) {
+    t = t.slice(1, -1).trim();
+  }
+  return t || undefined;
+}
+
+/** Telegram принимает число для числовых chat_id (в т.ч. отрицательных для супергрупп) */
+function normalizeChatIdForApi(raw: string): string | number {
+  const t = raw.trim();
+  if (/^-?\d+$/.test(t)) return Number(t);
+  return t;
+}
+
+function telegramApiUserMessage(status: number, body: string): string {
+  try {
+    const data = JSON.parse(body) as { description?: string; error_code?: number };
+    const d = data.description ?? '';
+    if (data.error_code === 401 || /unauthorized/i.test(d)) {
+      return 'Telegram: неверный TELEGRAM_BOT_TOKEN. Проверь значение в Vercel → Settings → Environment Variables (без лишних кавычек), сделай Redeploy.';
+    }
+    if (/chat not found/i.test(d)) {
+      return 'Telegram: неверный TELEGRAM_CHAT_ID. Открой диалог с ботом, нажми /start, снова возьми chat_id из getUpdates.';
+    }
+    if (/blocked by the user|bot was blocked/i.test(d)) {
+      return 'Telegram: получатель заблокировал бота. Разблокируй бота или укажи другой TELEGRAM_CHAT_ID.';
+    }
+    if (/too many requests|retry after/i.test(d)) {
+      return 'Telegram временно ограничил запросы. Попробуй через минуту.';
+    }
+    if (d) return `Telegram: ${d.slice(0, 280)}`;
+  } catch {
+    /* не JSON */
+  }
+  if (status === 404) {
+    return 'Telegram API: 404 — проверь, что токен полный (формат 123456789:AAH...).';
+  }
+  return 'Не удалось отправить заявку в Telegram. Открой логи функции /api/apply на Vercel и проверь TELEGRAM_* для Production и Preview.';
+}
 
 /** Только в development: прокси на прод-API (Vercel), если с ПК не достучаться до api.telegram.org */
 function devApplyUpstreamBase(): string | undefined {
@@ -182,16 +231,22 @@ export async function POST(req: NextRequest) {
     const cleanPlan = plan?.trim().slice(0, 120);
     const cleanProject = project?.trim().slice(0, 500);
 
-    const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
-    const chatId = process.env.TELEGRAM_CHAT_ID?.trim();
+    const token = normalizeEnvValue(process.env.TELEGRAM_BOT_TOKEN);
+    const chatIdRaw = normalizeEnvValue(process.env.TELEGRAM_CHAT_ID);
 
-    if (!token || !chatId) {
+    if (!token || !chatIdRaw) {
       console.error('[apply] Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID');
       return NextResponse.json(
-        { error: 'Сервис временно недоступен. Напиши напрямую @nikmorus' },
+        {
+          error:
+            'На сервере не заданы TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID. ' +
+            'Vercel → Settings → Environment Variables: добавь оба для окружения Production (и Preview, если тестируешь preview-URL), затем Redeploy.',
+        },
         { status: 500 }
       );
     }
+
+    const chatId = normalizeChatIdForApi(chatIdRaw);
 
     const mskTime = new Date().toLocaleString('ru-RU', {
       timeZone: 'Europe/Moscow',
@@ -246,10 +301,8 @@ export async function POST(req: NextRequest) {
     if (!tgRes.ok) {
       const errorBody = await tgRes.text();
       console.error('[apply] Telegram API error:', tgRes.status, errorBody);
-      return NextResponse.json(
-        { error: 'Не удалось отправить заявку. Попробуй ещё раз или напиши @nikmorus' },
-        { status: 502 }
-      );
+      const error = telegramApiUserMessage(tgRes.status, errorBody);
+      return NextResponse.json({ error }, { status: 502 });
     }
 
     return NextResponse.json({ ok: true });
