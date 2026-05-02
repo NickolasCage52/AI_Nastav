@@ -14,6 +14,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { Section, Reveal, Eyebrow } from './Section';
+import { useIsMobile } from '@/lib/use-media-query';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -166,6 +167,8 @@ function KnockoutEquation() {
 
 export default function WhyNow() {
   const reduceMotion = useReducedMotion();
+  const isMobile = useIsMobile();
+  const stagger = isMobile ? 0.05 : 0.1;
 
   const knockoutTransition = {
     duration: reduceMotion ? 0.01 : 0.8,
@@ -226,7 +229,7 @@ export default function WhyNow() {
               viewport={{ once: true, margin: '-10% 0px' }}
               transition={{
                 duration: reduceMotion ? 0.01 : 0.65,
-                delay: reduceMotion ? 0 : i * 0.1,
+                delay: reduceMotion ? 0 : i * stagger,
                 ease: EASE,
               }}
             >
@@ -244,7 +247,7 @@ export default function WhyNow() {
                 <h3 className="text-xl md:text-2xl font-medium text-white mb-3 leading-tight">
                   {c.title}
                 </h3>
-                <p className="text-white/60 text-[15px] leading-relaxed">
+                <p className="text-white/60 text-base md:text-[15px] leading-relaxed">
                   {c.body}
                 </p>
               </div>

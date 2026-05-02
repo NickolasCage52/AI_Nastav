@@ -11,6 +11,7 @@ import {
   type MotionValue,
 } from 'framer-motion';
 import { ArrowUpRight, Sparkles } from 'lucide-react';
+import { useIsMobile } from '@/lib/use-media-query';
 
 function HeroMagneticPrimary({
   href,
@@ -216,6 +217,7 @@ function HeroVisual({
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
+  const isMobile = useIsMobile();
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
@@ -234,7 +236,7 @@ export default function Hero() {
     <section
       ref={heroRef}
       id="top"
-      className="relative min-h-[100svh] flex items-center pt-24 pb-16 overflow-hidden"
+      className="relative min-h-[100svh] flex items-center pt-20 pb-14 md:pt-24 md:pb-16 overflow-hidden"
     >
       <div
         className="glow-orb animate-breathe"
@@ -273,7 +275,7 @@ export default function Hero() {
             <span className="h-mono">AI-разработка · Наставничество</span>
           </motion.div>
 
-          <h1 className="h-display text-white text-[clamp(44px,7.5vw,92px)] mb-8">
+          <h1 className="h-display text-white text-[clamp(38px,7.5vw,92px)] mb-8 break-words">
             <span className="mask-line">
               <span style={{ animationDelay: '0ms' }}>От промпта —</span>
             </span>
@@ -283,7 +285,7 @@ export default function Hero() {
             <span className="mask-line">
               <span
                 style={{ animationDelay: '280ms' }}
-                className="italic text-accent-soft"
+                className="italic text-accent-soft [overflow-wrap:anywhere]"
               >
                 оплачиваемого проекта.
               </span>
@@ -291,7 +293,7 @@ export default function Hero() {
           </h1>
 
           <motion.p
-            className="text-white/65 text-lg md:text-xl max-w-xl leading-relaxed mb-10"
+            className="text-white/65 text-lg md:text-xl max-w-xl leading-relaxed mb-10 line-clamp-5 md:line-clamp-none"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.7 }}
@@ -307,14 +309,19 @@ export default function Hero() {
             animate="show"
             variants={{
               hidden: {},
-              show: { transition: { staggerChildren: 0.08, delayChildren: 0.95 } },
+              show: {
+                transition: {
+                  staggerChildren: isMobile ? 0.04 : 0.08,
+                  delayChildren: 0.95,
+                },
+              },
             }}
           >
             {[
               'Без опыта в программировании на старте',
               'От сильных промптов — до реальных проектов',
               'Первые деньги или усиление текущей работы',
-              '8 / 16 / 24 сессии — под твою задачу',
+              '4 / 8 / 12 сессий — под твою задачу',
             ].map((text) => (
               <motion.li
                 key={text}
@@ -338,11 +345,17 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.3 }}
           >
-            <HeroMagneticPrimary href="#pricing" className="btn-primary">
+            <HeroMagneticPrimary
+              href="#pricing"
+              className="btn-primary w-full min-h-[48px] justify-center sm:w-auto sm:justify-start sm:min-h-0"
+            >
               Выбрать тариф
               <ArrowUpRight size={18} strokeWidth={1.8} />
             </HeroMagneticPrimary>
-            <a href="#program" className="btn-ghost">
+            <a
+              href="#program"
+              className="btn-ghost w-full min-h-[48px] justify-center sm:w-auto sm:justify-start sm:min-h-0"
+            >
               Посмотреть программу
             </a>
           </motion.div>
@@ -369,7 +382,7 @@ export default function Hero() {
       </div>
 
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30 text-xs font-mono tracking-widest"
+        className="pointer-events-none absolute bottom-8 left-1/2 hidden -translate-x-1/2 md:flex md:flex-col md:items-center md:gap-2 text-white/30 text-xs font-mono tracking-widest"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}

@@ -27,7 +27,7 @@ import ApplicationForm from '@/components/ApplicationForm';
  */
 export default function Page() {
   return (
-    <main className="relative">
+    <main className="relative pb-20 md:pb-0">
       <Header />
       <Hero />
       <Ticker />

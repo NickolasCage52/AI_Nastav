@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { Section, Reveal, Eyebrow } from './Section';
+import { useIsMobile } from '@/lib/use-media-query';
 
 type CountPhase = 'idle' | 'counting' | 'glitch' | 'done';
 
@@ -17,10 +18,11 @@ function CountUp({ to, duration = 1500 }: { to: number; duration?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: '-20% 0px' });
   const reduceMotion = useReducedMotion();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!inView) return;
-    if (reduceMotion) {
+    if (reduceMotion || isMobile) {
       setValue(to);
       setBlurPx(0);
       setPhase('done');
@@ -48,12 +50,12 @@ function CountUp({ to, duration = 1500 }: { to: number; duration?: number }) {
       cancelAnimationFrame(raf);
       if (glitchTimer !== undefined) window.clearTimeout(glitchTimer);
     };
-  }, [inView, to, duration, reduceMotion]);
+  }, [inView, to, duration, reduceMotion, isMobile]);
 
   return (
     <span
       className={
-        phase === 'done' && !reduceMotion
+        phase === 'done' && !reduceMotion && !isMobile
           ? 'case-amount-glow inline-block'
           : 'inline-block'
       }
@@ -66,7 +68,10 @@ function CountUp({ to, duration = 1500 }: { to: number; duration?: number }) {
             : 'inline-block'
         }
         style={{
-          filter: reduceMotion || blurPx < 0.5 ? 'none' : `blur(${blurPx}px)`,
+          filter:
+            reduceMotion || isMobile || blurPx < 0.5
+              ? 'none'
+              : `blur(${blurPx}px)`,
         }}
       >
         {value.toLocaleString('ru-RU')}
@@ -213,7 +218,7 @@ export default function Cases() {
             <div>
               <div className="text-white/50 text-[15px] mb-3">{c.label}</div>
               <div className="h-display text-white mb-6 flex items-baseline gap-2">
-                <span className="text-[clamp(56px,8vw,120px)] leading-none tracking-tight">
+                <span className="text-[clamp(42px,8vw,120px)] leading-none tracking-tight">
                   <CountUp to={c.amount} />
                 </span>
                 <span className="text-[clamp(28px,4vw,56px)] text-accent-soft">

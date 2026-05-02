@@ -42,13 +42,13 @@ export default function FinalCTA() {
   return (
     <section
       id="final"
-      className="relative py-32 md:py-48 px-6 md:px-12 overflow-hidden"
+      className="relative py-24 md:py-48 px-6 md:px-12 overflow-hidden"
     >
       <div
         className="glow-orb animate-breathe"
         style={{
-          width: 900,
-          height: 900,
+          width: 'min(900px, 90vw)',
+          height: 'min(900px, 90vw)',
           left: '50%',
           top: '50%',
           transform: 'translate(-50%, -50%)',
@@ -97,10 +97,22 @@ export default function FinalCTA() {
           </p>
         </Reveal>
 
-        <Reveal delay={0.2}>
+        <Reveal delay={0.12}>
+          <div className="relative mx-auto mb-12 md:mb-14 max-w-[min(1040px,100%)] rounded-2xl bg-white/[0.02] p-2 ring-1 ring-white/[0.07] sm:p-2.5">
+            <img
+              src="/final-cta/hero.png"
+              alt="Иллюстрация: сборка продуктов и данных с помощью ИИ"
+              loading="lazy"
+              decoding="async"
+              className="w-full rounded-[14px] object-contain max-h-[min(48svh,460px)] md:max-h-[min(54svh,520px)] mx-auto"
+            />
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.22}>
           <div
             ref={wrapRef}
-            className="relative inline-flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="relative flex w-full max-w-[min(1040px,100%)] mx-auto flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center"
           >
             {ripples.map((r) => (
               <motion.span
@@ -115,18 +127,18 @@ export default function FinalCTA() {
             ))}
             <a
               href="#pricing"
-              className="btn-primary relative z-[1]"
+              className="btn-primary relative z-[1] w-full min-h-[48px] max-w-[320px] justify-center sm:w-auto sm:max-w-none"
               onClick={onPrimaryClick}
             >
               Выбрать тариф
               <ArrowUpRight size={18} strokeWidth={1.8} />
             </a>
-            <div className="flex flex-col items-center gap-1.5 relative z-[1]">
+            <div className="flex w-full flex-col items-center gap-1.5 relative z-[1]">
               <a
                 href={TG}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-ghost"
+                className="btn-ghost w-full max-w-[320px] min-h-[48px] justify-center sm:w-auto sm:max-w-none"
               >
                 <Send size={17} strokeWidth={1.8} />
                 Написать в Telegram

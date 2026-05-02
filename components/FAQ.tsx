@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import { Section, Reveal, Eyebrow } from './Section';
+import { useIsMobile } from '@/lib/use-media-query';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -29,6 +30,10 @@ const FAQS = [
     a: 'Зависит от тарифа и твоего темпа. Суть — идти по системе с сопровождением, а не через хаос.',
   },
   {
+    q: 'Что с доступом к базе знаний?',
+    a: 'На базовом тарифе доступ открыт на 2 месяца после старта — этого хватает, чтобы пройти материал и закрепить. На тарифах «Результативные проекты» и «Рост через партнёрство» — база остаётся навсегда. Можно возвращаться к промптам, шаблонам и разборам в любой момент, даже через год.',
+  },
+  {
     q: 'Будут ли реальные проекты?',
     a: 'Да. Особенно во 2 и 3 тарифе, где идёт глубокая работа с реализацией — вплоть до совместного закрытия клиентов.',
   },
@@ -47,6 +52,7 @@ const FAQS = [
 export default function FAQ() {
   const [open, setOpen] = useState<number>(0);
   const reduce = useReducedMotion();
+  const isMobile = useIsMobile();
 
   return (
     <Section id="faq">
@@ -67,11 +73,11 @@ export default function FAQ() {
               data-open={isOpen ? 'true' : 'false'}
             >
               <button
-                className="w-full flex items-center justify-between gap-6 py-7 text-left group relative"
+                className="w-full flex items-center justify-between gap-6 py-7 text-left group relative touch-manipulation rounded-lg outline-offset-2 active:bg-white/[0.03] md:active:bg-transparent"
                 onClick={() => setOpen(isOpen ? -1 : i)}
                 aria-expanded={isOpen}
               >
-                <span className="text-[19px] md:text-[22px] text-white font-medium leading-snug group-hover:text-accent-soft transition-colors">
+                <span className="text-[19px] md:text-[22px] text-white font-medium leading-snug mouse:group-hover:text-accent-soft transition-colors">
                   {item.q}
                 </span>
                 <motion.span
@@ -94,7 +100,7 @@ export default function FAQ() {
                     className="text-white/65 text-[17px] leading-relaxed pb-7 max-w-2xl"
                     initial={false}
                     animate={
-                      reduce
+                      reduce || isMobile
                         ? { opacity: isOpen ? 1 : 0 }
                         : {
                             opacity: isOpen ? 1 : 0,
@@ -103,7 +109,7 @@ export default function FAQ() {
                     }
                     transition={{
                       duration: reduce ? 0.01 : 0.4,
-                      delay: isOpen && !reduce ? 0.06 : 0,
+                      delay: isOpen && !reduce && !(isMobile) ? 0.06 : 0,
                       ease: EASE,
                     }}
                   >

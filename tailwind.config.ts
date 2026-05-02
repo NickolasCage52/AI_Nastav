@@ -7,6 +7,14 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        xs: '375px',
+        '3xl': '1920px',
+        tall: { raw: '(min-height: 800px)' },
+        short: { raw: '(max-height: 600px)' },
+        touch: { raw: '(hover: none)' },
+        mouse: { raw: '(hover: hover)' },
+      },
       colors: {
         ink: {
           DEFAULT: '#07070A',

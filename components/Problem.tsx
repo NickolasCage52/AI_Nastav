@@ -3,6 +3,7 @@
 import type { MouseEvent } from 'react';
 import { motion } from 'framer-motion';
 import { Section, Reveal, Eyebrow } from './Section';
+import { useIsMobile } from '@/lib/use-media-query';
 
 function spotlightMove(e: MouseEvent<HTMLDivElement>) {
   const el = e.currentTarget;
@@ -39,6 +40,9 @@ const PROBLEMS = [
 ];
 
 export default function Problem() {
+  const isMobile = useIsMobile();
+  const rowDelayMul = isMobile ? 0.035 : 0.055;
+
   return (
     <Section id="problem">
       <Reveal>
@@ -66,7 +70,7 @@ export default function Problem() {
             viewport={{ once: true, margin: '-10% 0px' }}
             transition={{
               duration: 0.6,
-              delay: (i % 3) * 0.08 + Math.floor(i / 3) * 0.2,
+              delay: rowDelayMul * (i % 3) + 0.2 * Math.floor(i / 3),
               ease: [0.22, 1, 0.36, 1],
             }}
           >
@@ -77,7 +81,7 @@ export default function Problem() {
             <h3 className="text-[19px] font-medium text-white mb-3 leading-snug">
               {problem.title}
             </h3>
-            <p className="text-white/55 text-[15px] leading-relaxed">
+            <p className="text-white/55 text-base md:text-[15px] leading-relaxed">
               {problem.body}
             </p>
           </motion.div>

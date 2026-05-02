@@ -17,6 +17,17 @@ export default function Header() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
+  useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -26,17 +37,17 @@ export default function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 safe-top ${
           scrolled
             ? 'bg-ink/60 backdrop-blur-xl border-b border-white/5'
             : 'bg-transparent'
         }`}
       >
-        <nav className="max-w-[1280px] mx-auto flex items-center justify-between px-6 md:px-12 h-16">
+        <nav className="max-w-[1280px] mx-auto flex items-center justify-between px-6 md:px-12 h-16 min-h-[64px]">
           {/* Wordmark */}
           <a
             href="#top"
-            className="font-mono text-[13px] tracking-[0.2em] font-medium text-white"
+            className="font-mono text-[13px] tracking-[0.2em] font-medium text-white min-h-[44px] flex items-center py-1 -ml-1 pl-1"
             aria-label="Morus — на главную"
           >
             morus
@@ -67,7 +78,7 @@ export default function Header() {
 
           {/* Mobile toggle */}
           <button
-            className="md:hidden p-2 -mr-2 text-white"
+            className="md:hidden min-h-[44px] min-w-[44px] flex items-center justify-center -mr-2 text-white"
             aria-label="Меню"
             onClick={() => setOpen(true)}
           >
@@ -80,25 +91,25 @@ export default function Header() {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 z-[60] bg-ink md:hidden"
+            className="fixed inset-0 z-[60] bg-ink md:hidden flex flex-col"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="flex items-center justify-between px-6 h-16 border-b border-white/5">
+            <div className="flex shrink-0 items-center justify-between px-6 min-h-[64px] safe-top border-b border-white/5">
               <span className="font-mono text-[13px] tracking-[0.2em] font-medium">
                 morus <span className="text-accent-soft">●</span>
               </span>
               <button
                 onClick={() => setOpen(false)}
-                className="p-2 -mr-2"
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center -mr-2"
                 aria-label="Закрыть"
               >
                 <X size={22} strokeWidth={1.5} />
               </button>
             </div>
-            <ul className="flex flex-col px-6 py-10 gap-6">
+            <ul className="flex flex-1 flex-col overflow-y-auto pl-6 pr-6 pb-8 gap-7 pt-10">
               {NAV.map((item, i) => (
                 <motion.li
                   key={item.href}
@@ -109,7 +120,7 @@ export default function Header() {
                   <a
                     href={item.href}
                     onClick={() => setOpen(false)}
-                    className="h-display text-4xl block"
+                    className="h-display text-[clamp(2rem,8vw,2.25rem)] flex min-h-[56px] items-center active:opacity-70 transition-opacity touch-manipulation"
                   >
                     {item.label}
                   </a>
@@ -119,7 +130,7 @@ export default function Header() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="pt-8"
+                className="mt-auto shrink-0 safe-bottom pb-3 pt-2"
               >
                 <a
                   href="#pricing"

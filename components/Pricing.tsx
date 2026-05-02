@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   motion,
   useInView,
@@ -12,21 +12,34 @@ import { ArrowUpRight } from 'lucide-react';
 import { Section, Reveal, Eyebrow } from './Section';
 import { useApplicationForm } from './FormContext';
 import { PLAN_INDIVIDUAL_PROJECT } from '@/lib/planLabels';
+import { useIsMobile, useHasHover } from '@/lib/use-media-query';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-const PLANS = [
+const PLANS: {
+  name: string;
+  price: number;
+  extra: string | null;
+  sessions: string;
+  description: string;
+  suitable: string;
+  features: ReactNode[];
+  cta: string;
+  featured: boolean;
+}[] = [
   {
     name: 'Базовый старт',
     price: 30000,
     extra: null,
-    sessions: '8 сессий',
+    sessions: '4 сессии',
     description:
-      'Фундамент AI-разработки. Система работы с ИИ. Рабочая связка ChatGPT + Claude + Cursor.',
+      'Фундамент AI-разработки. Четыре личные сессии, база знаний на старте и рабочая связка ChatGPT + Claude + Cursor.',
     suitable: 'Нужно войти в тему правильно и без хаоса.',
     features: [
-      'Личные сессии — 8 встреч',
-      'Доступ к базе знаний — навсегда',
+      'Личные сессии — 4 встречи',
+      <>
+        База знаний — <span className="text-white/50">на 2 месяца</span>
+      </>,
       'Рабочая связка инструментов',
       'Разбор промптов и логики',
       'Основа для первых проектов',
@@ -38,13 +51,17 @@ const PLANS = [
     name: 'Результативные проекты',
     price: 60000,
     extra: '+ 20% с закрытых проектов',
-    sessions: '16 сессий',
-    description: 'Доводим до реальных проектов. Я сопровождаю проект от и до.',
+    sessions: '8 сессий',
+    description:
+      'Доводим до реальных проектов. Восемь личных сессий и база навсегда — я сопровождаю проект от и до.',
     suitable: 'Важно не зависнуть на этапе «понял, но сам не довожу».',
     features: [
       'Всё из первого тарифа',
-      'Доступ к базе знаний — навсегда',
-      'Личные сессии — 16 встреч',
+      'Личные сессии — 8 встреч',
+      <>
+        База знаний —{' '}
+        <span className="text-accent-soft font-medium">навсегда</span>
+      </>,
       'Помощь в реализации проектов',
       'Сопровождение до рабочего уровня',
       'Практика на твоих клиентах',
@@ -56,15 +73,18 @@ const PLANS = [
     name: 'Рост через партнёрство',
     price: 80000,
     extra: '+ 30% с закрытых проектов',
-    sessions: '24 сессии',
+    sessions: '12 сессий',
     description:
-      'Я подключаюсь глубже: созвоны с клиентами, переговоры, закрытие.',
+      'Я подключаюсь глубже: двенадцать личных сессий, база навсегда, созвоны с клиентами, переговоры и закрытие.',
     suitable:
       'Нужна максимальная вовлечённость и рост через реальных клиентов.',
     features: [
       'Всё из предыдущих тарифов',
-      'Доступ к базе знаний — навсегда',
-      'Личные сессии — 24 встречи',
+      'Личные сессии — 12 встреч',
+      <>
+        База знаний —{' '}
+        <span className="text-accent-soft font-medium">навсегда</span>
+      </>,
       'Помощь в закрытии клиентов',
       'Совместные созвоны',
       'Усиление переговоров',
@@ -161,14 +181,19 @@ function PricingPlanCard({
   reduce: boolean | null;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+  const finePointerInteractions = useHasHover();
   const entered = useInView(ref, { once: true, margin: '-10% 0px' });
   const i = index;
-  const dim = hovered !== null && hovered !== i;
-  const lift = hovered === i;
+  const dim =
+    finePointerInteractions && hovered !== null && hovered !== i;
+  const lift = finePointerInteractions && hovered === i;
 
-  const baseFeaturedY = plan.featured ? -12 : 0;
+  const baseFeaturedY = plan.featured && !(isMobile) ? -12 : 0;
   const targetY =
     !entered ? 32 : lift ? baseFeaturedY - 8 : dim ? baseFeaturedY + 6 : baseFeaturedY;
+
+  const featuredRestScale = plan.featured && !(isMobile) ? 1.02 : 1;
 
   const targetScale = !entered
     ? 1
@@ -177,7 +202,7 @@ function PricingPlanCard({
         ? 0.985
         : lift
           ? 1.06
-          : 1.02
+          : featuredRestScale
       : dim
         ? 0.97
         : lift
@@ -187,7 +212,7 @@ function PricingPlanCard({
   const targetOpacity = !entered ? 0 : dim ? 0.85 : 1;
 
   const shadowLift =
-    lift && !reduce
+    lift && !reduce && finePointerInteractions
       ? '0 0 150px -18px rgba(123,75,255,0.65)'
       : plan.featured
         ? '0 0 120px -20px rgba(123,75,255,0.5)'
@@ -196,8 +221,8 @@ function PricingPlanCard({
   return (
     <motion.div
       ref={ref}
-      className={`relative glass rounded-3xl p-8 md:p-9 flex flex-col ${
-        plan.featured ? 'ring-1 ring-accent' : ''
+      className={`relative glass rounded-3xl p-7 md:p-9 flex flex-col ${
+        plan.featured ? 'ring-1 ring-accent order-first md:order-none' : ''
       }`}
       initial={false}
       animate={
@@ -214,8 +239,10 @@ function PricingPlanCard({
         duration: reduce ? 0.35 : 0.45,
         ease: EASE,
       }}
-      onMouseEnter={() => setHovered(i)}
-      onMouseLeave={() => setHovered(null)}
+      onMouseEnter={finePointerInteractions ? () => setHovered(i) : undefined}
+      onMouseLeave={
+        finePointerInteractions ? () => setHovered(null) : undefined
+      }
     >
       {plan.featured && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 chip !py-1.5 whitespace-nowrap">
@@ -250,15 +277,15 @@ function PricingPlanCard({
       <div className="font-mono text-[11px] tracking-widest text-white/40 mb-3">
         ПОДХОДИТ, ЕСЛИ
       </div>
-      <p className="text-white/80 text-[14px] leading-relaxed mb-8">
+      <p className="text-white/80 text-[16px] md:text-[14px] leading-relaxed mb-8">
         {plan.suitable}
       </p>
 
       <ul className="space-y-2.5 mb-10 flex-1">
-        {plan.features.map((f) => (
+        {plan.features.map((f, fi) => (
           <li
-            key={f}
-            className="flex items-start gap-2.5 text-white/75 text-[14px]"
+            key={fi}
+            className="flex items-start gap-2.5 text-white/75 text-[16px] md:text-[14px]"
           >
             <span className="text-accent-soft mt-1 leading-none">◆</span>
             <span>{f}</span>

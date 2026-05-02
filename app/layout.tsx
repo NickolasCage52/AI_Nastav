@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import { FormProvider } from '@/components/FormContext';
@@ -6,6 +6,15 @@ import './globals.css';
 
 // Display: системный serif-стек (--font-display в globals.css). Без next/font/google —
 // иначе при недоступности fonts.googleapis.com шум в логах и лишние запросы при сборке.
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: '#07070A',
+  viewportFit: 'cover',
+};
 
 export const metadata: Metadata = {
   title: 'Наставничество по AI-разработке — Никита Морус · От промпта до проекта',

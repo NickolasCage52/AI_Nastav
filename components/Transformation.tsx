@@ -21,12 +21,22 @@ export default function Transformation() {
     <Section id="transformation">
       <Reveal>
         <Eyebrow>До / после</Eyebrow>
-        <h2 className="h-display text-[clamp(36px,5vw,68px)] mb-20 max-w-3xl">
+        <h2 className="h-display text-[clamp(36px,5vw,68px)] mb-0 max-w-3xl">
           От хаоса — к{' '}
           <span className="italic text-accent-soft">системе.</span>
           <br />
           За недели, а не годы.
         </h2>
+
+        <figure className="mb-14 mt-10 md:mb-20 md:mt-14 overflow-hidden rounded-xl md:rounded-2xl bg-black/35 ring-1 ring-white/[0.07]">
+          <img
+            src="/transformation/before-after.png"
+            alt="До: бумажный хаос и ручная работа. После: единый интерфейс с ИИ, задачи и метрики в одном месте."
+            loading="lazy"
+            decoding="async"
+            className="mx-auto block h-auto w-full max-h-[min(72svh,620px)] object-contain object-center"
+          />
+        </figure>
       </Reveal>
 
       <div className="relative grid md:grid-cols-2 gap-0 md:gap-16 items-start">
@@ -42,7 +52,7 @@ export default function Transformation() {
           transition={{ duration: 1.4, ease: EASE }}
         />
 
-        <div className="space-y-1 pb-10 md:pb-0">
+        <div className="space-y-1">
           <div className="h-mono mb-6 text-white/40">КАК СЕЙЧАС</div>
           <ul className="space-y-5">
             {ROWS.map((row, i) => (
@@ -61,6 +71,13 @@ export default function Transformation() {
               </motion.li>
             ))}
           </ul>
+        </div>
+
+        <div
+          className="relative md:hidden my-10 min-h-px h-px w-full overflow-hidden"
+          aria-hidden
+        >
+          <div className="h-full bg-gradient-to-r from-transparent via-accent/35 to-transparent" />
         </div>
 
         <motion.div

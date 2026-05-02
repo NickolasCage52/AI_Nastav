@@ -31,11 +31,58 @@
 
 * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+a, button, [role="button"] {
+  touch-action: manipulation;
+}
+
+input, textarea, select {
+  font-size: 16px;
+}
+
+@media (min-width: 1024px) {
+  input, textarea, select {
+    font-size: inherit;
+  }
+}
+
+@media (max-width: 767px) {
+  .leading-relaxed { line-height: 1.65; }
+  .leading-snug { line-height: 1.4; }
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
 html, body {
   background: var(--bg-ink);
   color: var(--text-pri);
   scroll-behavior: smooth;
   overflow-x: hidden;
+}
+
+@media (hover: none) {
+  .glass:hover {
+    transform: none;
+    border-color: var(--line);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .glass:active {
+    transform: scale(0.99);
+    border-color: rgba(123, 75, 255, 0.25);
+    transition: transform 150ms ease, border-color 150ms ease;
+  }
 }
 
 /* глобальный grain — борется с banding в gradients */
@@ -203,6 +250,17 @@ body::before {
   position: relative;
   z-index: 1;
 }
+
+@media (hover: none) {
+  .glass-spotlight::before {
+    display: none;
+  }
+  .glass-spotlight:active {
+    background: rgba(123, 75, 255, 0.04);
+    transition: background 150ms ease;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .glass-spotlight::before { transition: none; }
 }
@@ -387,7 +445,9 @@ body::before {
   border-radius: 10px;
   border: 2px solid var(--bg-ink);
 }
-::-webkit-scrollbar-thumb:hover { background: rgba(123, 75, 255, 0.4); }
+@media (hover: hover) {
+  ::-webkit-scrollbar-thumb:hover { background: rgba(123, 75, 255, 0.4); }
+}
 
 /* SELECTION */
 ::selection { background: var(--accent); color: #fff; }
@@ -408,6 +468,19 @@ body::before {
 }
 
 /* BREATHING GLOW ORB — для hero и final CTA */
+@media (orientation: landscape) and (max-height: 500px) {
+  #top {
+    min-height: auto;
+    padding-top: 5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  #final {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+}
+
 .glow-orb {
   position: absolute;
   border-radius: 50%;

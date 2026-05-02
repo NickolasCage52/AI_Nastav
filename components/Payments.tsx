@@ -49,7 +49,7 @@ function PaymentCard({ item }: { item: PaymentItem }) {
 
   return (
     <motion.div
-      className="relative rounded-2xl overflow-hidden glass border border-white/[0.06] [&:hover]:!translate-y-0 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.01]"
+      className="relative rounded-2xl overflow-hidden glass border border-white/[0.06] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] mouse:hover:scale-[1.01] touch:active:scale-[0.99]"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-8% 0px' }}
@@ -57,7 +57,7 @@ function PaymentCard({ item }: { item: PaymentItem }) {
     >
       {/* Единый кадр 9:16 — скрин целиком, без кривой обрезки */}
       <div
-        className="relative w-full aspect-[9/16] max-h-[min(78vh,560px)] mx-auto bg-gradient-to-br from-[#141018] via-ink to-[#0a0812]"
+        className="relative w-full aspect-[9/16] max-h-[min(78svh,560px)] mx-auto bg-gradient-to-br from-[#141018] via-ink to-[#0a0812]"
       >
         {showImg ? (
           <Image

@@ -3,7 +3,7 @@
  */
 export default function Footer() {
   return (
-    <footer className="border-t border-white/5 py-12 px-6 md:px-12">
+    <footer className="border-t border-white/5 py-12 px-6 md:px-12 pb-24 md:pb-12">
       <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div>
           <div className="font-mono text-[13px] tracking-[0.2em] font-medium">
@@ -35,12 +35,6 @@ export default function Footer() {
             className="hover:text-accent-soft transition-colors"
           >
             Канал
-          </a>
-          <a
-            href="mailto:hi@morus.pro"
-            className="hover:text-accent-soft transition-colors"
-          >
-            hi@morus.pro
           </a>
         </div>
       </div>

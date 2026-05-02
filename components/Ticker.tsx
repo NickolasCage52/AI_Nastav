@@ -2,6 +2,7 @@
 
 import { useState, type CSSProperties } from 'react';
 import { useReducedMotion } from 'framer-motion';
+import { useIsMobile } from '@/lib/use-media-query';
 
 /**
  * TICKER — marquee с social proof.
@@ -22,10 +23,12 @@ const ITEMS = [
 export default function Ticker() {
   const [slow, setSlow] = useState(false);
   const reduce = useReducedMotion();
+  const isMobile = useIsMobile();
+  const baseDuration = isMobile ? '60s' : '40s';
 
   return (
     <div
-      className="relative border-y border-white/5 py-4 overflow-hidden"
+      className="relative border-y border-white/5 py-5 md:py-4 overflow-hidden"
       aria-hidden
       onMouseEnter={() => {
         if (!reduce) setSlow(true);
@@ -33,14 +36,15 @@ export default function Ticker() {
       onMouseLeave={() => setSlow(false)}
       style={
         {
-          '--marquee-duration': slow && !reduce ? '200s' : '40s',
+          '--marquee-duration':
+            slow && !reduce ? '200s' : baseDuration,
         } as CSSProperties
       }
     >
       <div className="group flex gap-10 ticker-track whitespace-nowrap will-change-transform">
         {[...ITEMS, ...ITEMS, ...ITEMS, ...ITEMS].map((item, i) => (
           <div key={i} className="flex items-center gap-10 shrink-0">
-            <span className="font-mono text-[13px] text-white/40 tracking-wider transition-colors duration-500 group-hover:text-white/70">
+            <span className="font-mono text-[13px] text-white/40 tracking-wider transition-colors duration-500 mouse:group-hover:text-white/70">
               {item}
             </span>
             <span className="text-accent-soft/50">◆</span>

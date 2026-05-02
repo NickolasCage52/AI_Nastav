@@ -56,15 +56,15 @@ export default function Program() {
         <p className="text-white/60 text-lg mb-20">Маршрут, а не квест.</p>
       </Reveal>
 
-      <div ref={ref} className="relative pl-14 md:pl-24">
+      <div ref={ref} className="relative pl-12 sm:pl-14 md:pl-24">
         {/* Static baseline */}
         <div
-          className="absolute left-5 md:left-10 top-2 bottom-2 w-px bg-white/10"
+          className="absolute left-[17px] sm:left-5 md:left-10 top-2 bottom-2 w-px bg-white/10"
           aria-hidden
         />
         {/* Progress line — заливается по мере скролла */}
         <motion.div
-          className="absolute left-5 md:left-10 top-2 w-px origin-top"
+          className="absolute left-[17px] sm:left-5 md:left-10 top-2 w-px origin-top"
           style={{
             height: lineHeight,
             background:
@@ -85,7 +85,7 @@ export default function Program() {
               transition={{ duration: 0.6 }}
             >
               {/* Node */}
-              <div className="absolute -left-[53px] md:-left-[96px] top-1 w-10 h-10 md:w-12 md:h-12 rounded-full border border-accent/40 bg-ink flex items-center justify-center font-mono text-[11px] tracking-wider text-accent-soft shadow-glow-sm">
+              <div className="absolute -left-[46px] sm:-left-[53px] md:-left-[96px] top-1 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border border-accent/40 bg-ink flex items-center justify-center font-mono text-[10px] sm:text-[11px] tracking-wider text-accent-soft shadow-glow-sm">
                 {step.n}
               </div>
 
